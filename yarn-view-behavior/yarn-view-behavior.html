@@ -53,7 +53,7 @@
       activePage: false,
       pageLoading: false,
 
-      /* Call enter if ready, otherwise wait to call enter */
+      /* Call _enter if ready, otherwise wait to call _enter */
       loadView: function() {
 
         var self = this;
@@ -65,7 +65,7 @@
             this.activePage = true;
             this.async(function() {
 
-              self.enter();
+              self._enter();
             });
         } else {
 
@@ -75,25 +75,25 @@
             // If view not ready, wait for it
             if (!this.viewReady) {
 
-                this.addEventListener('yarn-view-ready', this.enterOnceReady);
+                this.addEventListener('yarn-view-ready', this._enterOnceReady);
             }
 
             // If using authentication and auth is not ready, wait for it
             if (!this.authenticationReady && this.authenticate) {
 
-                this.addEventListener('yarn-view-authentication-finished', this.enterOnceReady);
+                this.addEventListener('yarn-view-authentication-finished', this._enterOnceReady);
             }
 
             // If long-loading, waaait for it
             if (!this.longLoadReady && this.longLoad && internals.firstLoaded) {
 
-                this.addEventListener('yarn-view-long-loaded', this.enterOnceReady);
+                this.addEventListener('yarn-view-long-loaded', this._enterOnceReady);
 
                 var self = this;
 
                 this.async(function() {
                   self.longLoadReady = true;
-                  self.fire('yarn-view-long-loaded', {page: self});
+                  self.fire('yarn-view-long-loaded', { page: self });
                 }, null, this.longLoadMs);
 
             }
@@ -102,57 +102,22 @@
 
       },
 
-      /* Call exit with events */
+      /* Call _exit with events */
       destroyView: function() {
 
-        this.fire('yarn-view-destroying', {page: this});
+        this.fire('yarn-view-destroying', { page: this });
 
         // Reset need for long load.
         this.longLoadReady = false;
 
         this.activePage = false;
         this.pageLoading = false;
-        this.exit();
+        this._exit();
 
-        this.fire('yarn-view-destroyed', {page: this});
+        this.fire('yarn-view-destroyed', { page: this });
       },
 
-      /* Callback waiting for app-page-ready if view was not ready when loadView was called */
-      enterOnceReady: function() {
-
-        var self = this;
-
-        if (this.viewReady) {
-
-            this.removeEventListener('yarn-view-ready', this.enterOnceReady);
-        }
-
-        if (this.authenticationReady && this.authenticate) {
-
-            this.removeEventListener('yarn-view-authentication-finished', this.enterOnceReady);
-        }
-
-        if (this.longLoadReady && this.longLoad && internals.firstLoaded) {
-
-            this.removeEventListener('yarn-view-long-loaded', this.enterOnceReady);
-        }
-
-        if (this.viewReady &&
-            (this.authenticationReady || !this.authenticate) &&
-            (this.longLoadReady || !this.longLoad || !internals.firstLoaded)) {
-
-          internals.firstLoaded = true;
-
-          this.activePage = true;
-          this.async(function() {
-
-            self.enter();
-          });
-        }
-
-      },
-
-      /* Declare that this view is ready to render. Fire event when viewReady becomes true, triggers enterOnceReady */
+      /* Declare that this view is ready to render. Fire event when viewReady becomes true, triggers _enterOnceReady */
       viewIsReady: function() {
 
         this.viewReady = true;
@@ -189,8 +154,43 @@
       },
 
       /* Only methods typically overridden on extension, default noop */
-      enter: function() {},
-      exit: function() {},
+      _enter: function() { },
+      _exit: function() { },
+
+      /* Callback waiting for yarn-view-ready if view was not ready when loadView was called */
+      _enterOnceReady: function() {
+
+        var self = this;
+
+        if (this.viewReady) {
+
+            this.removeEventListener('yarn-view-ready', this._enterOnceReady);
+        }
+
+        if (this.authenticationReady && this.authenticate) {
+
+            this.removeEventListener('yarn-view-authentication-finished', this._enterOnceReady);
+        }
+
+        if (this.longLoadReady && this.longLoad && internals.firstLoaded) {
+
+            this.removeEventListener('yarn-view-long-loaded', this._enterOnceReady);
+        }
+
+        if (this.viewReady &&
+            (this.authenticationReady || !this.authenticate) &&
+            (this.longLoadReady || !this.longLoad || !internals.firstLoaded)) {
+
+          internals.firstLoaded = true;
+
+          this.activePage = true;
+          this.async(function() {
+
+            self._enter();
+          });
+        }
+
+      },
 
       _checkAuth: function() {
 
@@ -199,7 +199,7 @@
           if (this.state.auth.status == 'finished') {
 
             this.authenticationReady = true;
-            this.fire('yarn-view-authentication-finished', {page: this});
+            this.fire('yarn-view-authentication-finished', { page: this });
           }
 
         }
