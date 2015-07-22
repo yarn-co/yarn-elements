@@ -1,0 +1,72 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<script>
+(function() {
+
+  var internals = {
+    instances: [];
+    state: {};
+  };
+
+  Polymer.YarnStateBehavior = {
+
+    properties: {
+      state: {
+        type: Object,
+        notify: true,
+        value: internals.state
+      }
+    },
+
+    ready: function() {
+
+      var _setOrig = this.set;
+      var _notifyPathOrig = this.notifyPath;
+
+      this.set = function() {
+
+        _setOrig.apply(this, arguments);
+        if (arguments[0].split(".")[0] === "state") {
+          this._invokeInstances(_notifyPathOrig, arguments);
+        }
+      };
+
+      this.notifyPath = function(path, value) {
+
+        _notifyPathOrig.apply(this, arguments);
+        if (arguments[0].split(".")[0] === "state") {
+          this._invokeInstances(_notifyPathOrig, arguments);
+        }
+      };
+    },
+
+    attached: function() {
+
+      internals.instances.push(this);
+    },
+
+    detached: function() {
+
+      var i;
+      i = internals.instances.indexOf(this);
+      if (i >= 0) {
+        internals.instances.splice(i, 1);
+      }
+    },
+
+    _invokeInstances: function(fn, args) {
+
+      var instances = internals.instances;
+
+      for (var i = 0; i < instances.length; i++) {
+        instance = instances[i];
+        if (instance !== this) {
+          fn.apply(instance, args);
+        }
+      }
+    }
+
+  };
+
+})();
+</script>
