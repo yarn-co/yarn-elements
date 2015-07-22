@@ -1,0 +1,20 @@
+{
+  "name": "yarn-elements",
+  "version": "0.0.1",
+  "keywords": [
+    "web-components",
+    "polymer"
+  ],
+  "license": "MIT",
+  "description": "Polymer v1 elements for the yarniverse",
+  "authors": [
+    "Devin Ivy <devin@bigroomstudios.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yarn-co/yarn-elements.git"
+  },
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  }
+}
