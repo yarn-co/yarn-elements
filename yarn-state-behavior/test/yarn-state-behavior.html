@@ -13,32 +13,62 @@
     <script src="../../../test-fixture/test-fixture-mocha.js"></script>
 
     <link rel="import" href="../../../test-fixture/test-fixture.html">
-    <link rel="import" href="test-state.html">
+    <link rel="import" href="test-state-from.html">
+    <link rel="import" href="test-state-to.html">
 
   </head>
   <body>
 
     <test-fixture id="simple">
       <template>
-        <test-state></test-state>
-        <test-state></test-state>
+        <test-state-from></test-state-from>
+        <test-state-to></test-state-to>
       </template>
     </test-fixture>
 
     <script>
+      suite('<yarn-state-behavior>', function() {
 
-      suite('simple state tests', function() {
-        var states;
+        suite('when setting state', function() {
 
-        setup(function() {
-          states = fixture('simple');
-        });
+          var states;
+          var from;
+          var to;
 
-        test('shares state.', function(done) {
+          setup(function() {
 
-          states[0].set('state.test', 'test1');
-          assert.equal(states[0].state.test, states[1].state.test);
-          done();
+            states = fixture('simple');
+            from = states[0];
+            to = states[1];
+          });
+
+          test('it is shared across elements.', function(done) {
+
+            from.set('state.prop', 'shared');
+
+            assert.equal(from.state.prop, to.state.prop);
+            done();
+          });
+
+          test('other elements can observe first-level state properties.', function(done) {
+
+            from.set('state.prop', 'first-level');
+
+            assert.equal(to.state.prop, 'first-level');
+            assert.equal(to.seenState, 'first-level');
+            done();
+          });
+
+          test('other elements can observe deep state properties.', function(done) {
+
+            from.set('state.deep', {});
+            from.set('state.deep.prop', 'deep');
+
+            assert.equal(to.state.deep.prop, 'deep');
+            assert.equal(to.seenState, 'deep');
+            done();
+          });
+
         });
 
       });

@@ -26,26 +26,29 @@
 
     ready: function() {
 
+      var self = this;
+
       // Polyfill set and notifyPath to delegate to all instances.
       var methodNames = ['set', 'notifyPath'];
 
       var methodName;
-      var _methodOrig;
-      for (var i = 0; i > methodNames.length; i++) {
+      for (var i = 0; i < methodNames.length; i++) {
 
         methodName = methodNames[i];
-        _methodOrig = this[methodName];
 
-        this[methodName] = function() {
+        (function(methodName, _methodOrig) {
 
-          _methodOrig.apply(this, arguments);
-          if (arguments[0].split('.')[0] === 'state') {
-            this._invokeInstances(_methodOrig, arguments);
-          }
-        };
+          self[methodName] = function() {
+            
+            _methodOrig.apply(self, arguments);
+            if (arguments[0].split('.')[0] === 'state') {
+              self._invokeInstances(_methodOrig, arguments);
+            }
+          };
+
+        })(methodName, this[methodName]);
 
       }
-
     },
 
     attached: function() {
