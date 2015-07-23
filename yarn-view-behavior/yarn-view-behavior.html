@@ -8,33 +8,152 @@
     firstLoaded: false
   };
 
+  /**
+  The `YarnViewBehavior` mixin gives elements view-like behavior.  It extends the lifecycle of an element to encompass the ideas of "entering", "exiting", and "reloading".  Additionally, this behavior can be used to force waits for authentication, arbitrary setup, or minimum wait times.  It also provides an API to report that a view is loading or finished loading upon entering.
+
+  To use this behavior, simply implement an `_enter` and `_exit` method on your element,
+  then call `loadView` and `destroyView` on the element as necessary.  When your view
+  is first ready to be used, call `viewIsReady`.  On the simplest views, this may be during the `domReady` lifecycle event.
+
+  `loadView` triggers `_enter` to be called when various states described below resolve.
+
+  `destroyView` calls `_exit` and maintains the view's state.
+
+  `reload` destroys then loads the view if it is active.
+
+  @polymerBehavior Polymer.YarnViewBehavior
+  */
+
   Polymer.YarnViewBehaviorImpl = {
+
+    /**
+     * @event yarn-view-waiting
+     */
+
+    /**
+     * @event yarn-view-ready
+     */
+
+    /**
+     * @event yarn-view-authentication-finished
+     */
+
+    /**
+     * @event yarn-view-destroyed
+     */
+
+    /**
+     * @event yarn-view-destroying
+     */
+
+    /**
+     * @event yarn-view-loaded
+     */
+
+    /**
+     * @event yarn-view-loading
+     */
+
+    /**
+     * @event yarn-view-long-loaded
+     */
 
     properties: {
 
-      // Require authentication via state.auth
+      /**
+       * Require authentication via `state.auth`
+       */
       authenticate: {
         type: Boolean,
         value: false
       },
 
-      // Reload page when state.auth.isAuthenticated changes
+      /**
+       * Reload view when `state.auth.isAuthenticated` changes.
+       */
       authReload: {
         type: Boolean,
         value: false
       },
 
-      // Require view to take a minimum amount of time to load
+      /**
+       * Require view to take a minimum amount of time to load.
+       */
       longLoad: {
         type: Boolean,
         value: false
       },
 
-      // Set length of longLoad behavior in milliseconds
+      /**
+       * Set length of `longLoad` behavior in milliseconds.
+       */
       longLoadMs: {
         type: Number,
         value: 2000
-      }
+      },
+
+      /**
+       * Indicates `viewIsReady` has been called,
+       * which should happen once per element.
+       *
+       * `_enter` will always wait for this.
+       */
+      viewReady:  {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * Indicates `viewIsReady` has been called,
+       * which should happen once per element.
+       *
+       * `_enter` will always wait for this.
+       */
+      authenticationReady:  {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * Indicates that the view has waited at least
+       * `longLoadMs` milliseconds to load when
+       * `longLoad` is set to `true`.
+       *
+       * `_enter` will wait for this when `longLoad` is set to `true`.
+       */
+      longLoadReady:  {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * Indicates that the view is active.
+       */
+      activeView:  {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * Indicates that the view is loading.
+       * This is `true` when the view is active and
+       * `startLoading` has been called, but
+       * `finishLoading` has not yet been called.
+       */
+      viewLoading:  {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
 
     },
 
@@ -43,17 +162,9 @@
       '_checkAuthReload(state.auth.isAuthenticated)'
     ],
 
-    /*
-     * Element should call viewIsReady to
-     * set this to true when view is ready to load
+    /**
+     * Call `_enter` if ready, otherwise wait to call `_enter`.
      */
-    viewReady: false,
-    authenticationReady: false,
-    longLoadReady: false,
-    activePage: false,
-    pageLoading: false,
-
-    /* Call _enter if ready, otherwise wait to call _enter */
     loadView: function() {
 
       var self = this;
@@ -62,7 +173,7 @@
           (this.authenticationReady || !this.authenticate) &&
           (this.longLoadReady || !this.longLoad || !internals.firstLoaded)) {
 
-          this.activePage = true;
+          this.activeView = true;
           this.async(function() {
 
             self._enter();
@@ -70,7 +181,7 @@
       } else {
 
           // Report that this view is waiting for something
-          this.fire('yarn-view-waiting', { page: this, long: (this.longLoad && internals.firstLoaded) });
+          this.fire('yarn-view-waiting', { view: this });
 
           // If view not ready, wait for it
           if (!this.viewReady) {
@@ -93,7 +204,7 @@
 
               this.async(function() {
                 self.longLoadReady = true;
-                self.fire('yarn-view-long-loaded', { page: self });
+                self.fire('yarn-view-long-loaded', { view: self });
               }, null, this.longLoadMs);
 
           }
@@ -102,62 +213,83 @@
 
     },
 
-    /* Call _exit with events */
+    /**
+     * Call `_exit` with events.
+     */
     destroyView: function() {
 
-      this.fire('yarn-view-destroying', { page: this });
+      this.fire('yarn-view-destroying', { view: this });
 
       // Reset need for long load.
       this.longLoadReady = false;
 
-      this.activePage = false;
-      this.pageLoading = false;
+      this.activeView = false;
+      this.viewLoading = false;
       this._exit();
 
-      this.fire('yarn-view-destroyed', { page: this });
+      this.fire('yarn-view-destroyed', { view: this });
     },
 
-    /* Declare that this view is ready to render. Fire event when viewReady becomes true, triggers _enterOnceReady */
+    /**
+     * Declare that this view is ready to render.
+     * Fire event when `viewReady` becomes `true`, triggers `_enterOnceReady`.
+     */
     viewIsReady: function() {
 
       this.viewReady = true;
-      this.fire('yarn-view-ready', { page: this });
+      this.fire('yarn-view-ready', { view: this });
     },
 
-    /* Report up for loader */
+    /**
+     * Report that the entered view is starting to load.
+     */
     startLoading: function() {
 
-      if (!this.pageLoading) {
+      if (!this.viewLoading) {
 
-        this.pageLoading = true;
-        this.fire('yarn-view-loading', { page: this });
+        this.viewLoading = true;
+        this.fire('yarn-view-loading', { view: this });
       }
     },
 
-    /* Report up for loader */
+    /**
+     * Report that the entered view has finished loading.
+     */
     finishLoading: function() {
 
-      if (this.pageLoading) {
+      if (this.viewLoading) {
 
-        this.pageLoading = false;
-        this.fire('yarn-view-loaded', { page: this });
+        this.viewLoading = false;
+        this.fire('yarn-view-loaded', { view: this });
       }
     },
 
+    /**
+     * Destroy then load the view if it's active.
+     */
     reload: function() {
 
-      if (this.activePage) {
+      if (this.activeView) {
 
         this.destroyView();
         this.loadView();
       }
     },
 
-    /* Only methods typically overridden on extension, default noop */
+    /**
+     * Override on element, defaults no-op.
+     */
     _enter: function() { },
+
+    /**
+     * Override on element, defaults no-op.
+     */
     _exit: function() { },
 
-    /* Callback waiting for yarn-view-ready if view was not ready when loadView was called */
+    /**
+     * Callback waiting for `yarn-view-ready`
+     * if view was not ready when `loadView` was called.
+     */
     _enterOnceReady: function() {
 
       var self = this;
@@ -183,7 +315,7 @@
 
         internals.firstLoaded = true;
 
-        this.activePage = true;
+        this.activeView = true;
         this.async(function() {
 
           self._enter();
@@ -199,7 +331,7 @@
         if (this.state.auth.status == 'finished') {
 
           this.authenticationReady = true;
-          this.fire('yarn-view-authentication-finished', { page: this });
+          this.fire('yarn-view-authentication-finished', { view: this });
         }
 
       }

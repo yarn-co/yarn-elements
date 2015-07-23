@@ -10,6 +10,7 @@
   };
 
   /**
+  The `YarnStateBehavior` mixin should be used to share app state across elements via the property `state`.  The behavior ensures that `this.set` and `this.notifyPath` calls involving the `state` object or its children are delegated to all elements with this behavior, so observers should work as expected.
 
   @polymerBehavior Polymer.YarnStateBehavior
   */
@@ -39,7 +40,7 @@
         (function(methodName, _methodOrig) {
 
           self[methodName] = function() {
-            
+
             _methodOrig.apply(self, arguments);
             if (arguments[0].split('.')[0] === 'state') {
               self._invokeInstances(_methodOrig, arguments);
