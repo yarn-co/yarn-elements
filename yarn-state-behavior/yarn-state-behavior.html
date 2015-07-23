@@ -1,12 +1,18 @@
 <link rel="import" href="../../polymer/polymer.html">
 
 <script>
+
 (function() {
 
   var internals = {
     instances: [],
     state: {}
   };
+
+  /**
+
+  @polymerBehavior Polymer.YarnStateBehavior
+  */
 
   Polymer.YarnStateBehavior = {
 
@@ -37,7 +43,7 @@
             this._invokeInstances(_methodOrig, arguments);
           }
         };
-        
+
       }
 
     },
