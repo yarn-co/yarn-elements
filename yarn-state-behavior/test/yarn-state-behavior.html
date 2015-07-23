@@ -69,6 +69,15 @@
             done();
           });
 
+          test('the shared object reference is read-only.', function(done) {
+
+            assert.throw(function() {
+              from.set('state', {});
+            });
+
+            done();
+          });
+
         });
 
       });
