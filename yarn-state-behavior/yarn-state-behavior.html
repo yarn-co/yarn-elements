@@ -20,24 +20,26 @@
 
     ready: function() {
 
-      var _setOrig = this.set;
-      var _notifyPathOrig = this.notifyPath;
+      // Polyfill set and notifyPath to delegate to all instances.
+      var methodNames = ['set', 'notifyPath'];
 
-      this.set = function() {
+      var methodName;
+      var _methodOrig;
+      for (var i = 0; i > methodNames.length; i++) {
 
-        _setOrig.apply(this, arguments);
-        if (arguments[0].split(".")[0] === "state") {
-          this._invokeInstances(_notifyPathOrig, arguments);
-        }
-      };
+        methodName = methodNames[i];
+        _methodOrig = this[methodName];
 
-      this.notifyPath = function(path, value) {
+        this[methodName] = function() {
 
-        _notifyPathOrig.apply(this, arguments);
-        if (arguments[0].split(".")[0] === "state") {
-          this._invokeInstances(_notifyPathOrig, arguments);
-        }
-      };
+          _methodOrig.apply(this, arguments);
+          if (arguments[0].split('.')[0] === 'state') {
+            this._invokeInstances(_methodOrig, arguments);
+          }
+        };
+        
+      }
+
     },
 
     attached: function() {
