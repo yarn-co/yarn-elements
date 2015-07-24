@@ -71,14 +71,18 @@
      */
     setCredentials: function(credentials, artifacts) {
 
+      if (typeof credentials === 'undefined') {
+        credentials = null;
+      }
+
+      if (typeof artifacts === 'undefined') {
+        artifacts = null;
+      }
+
       this.set('state.auth.credentials', credentials);
+      this.set('state.auth.artifacts', artifacts);
       this.set('state.auth.isAuthenticated', true);
       this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
-
-      if (typeof artifacts !== 'undefined') {
-
-        this.set('state.auth.artifacts', artifacts);
-      }
 
       this.fire('yarn-auth-success', {
         credentials: credentials,
