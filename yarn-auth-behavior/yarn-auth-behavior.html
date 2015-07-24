@@ -1,0 +1,37 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../yarn-state-behavior/yarn-state-behavior.html">
+
+<script>
+(function() {
+
+  /**
+  The `YarnAuthBehavior` mixin should be used to add authentication state to an app.
+
+  @polymerBehavior Polymer.YarnAuthBehavior
+  */
+
+  Polymer.YarnAuthBehaviorImpl = {
+
+    properties: {
+
+      /**
+       * An object shared among all elements with this behavior.
+       */
+      /*
+      whatever: {
+
+      }
+      */
+
+    }
+
+  };
+
+  // Compose behaviors
+  Polymer.YarnAuthBehavior = [
+    Polymer.YarnStateBehavior,
+    Polymer.YarnAuthBehaviorImpl
+  ];
+
+})();
+</script>
