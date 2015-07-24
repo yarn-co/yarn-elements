@@ -12,10 +12,10 @@
   The `YarnViewBehavior` mixin gives elements view-like behavior.  It extends the lifecycle of an element to encompass the ideas of "entering", "exiting", and "reloading".  Additionally, this behavior can be used to force waits for authentication, arbitrary setup, or minimum wait times.  It also provides an API to report that a view is loading or finished loading upon entering.
 
   To use this behavior, simply implement an `_enter` and `_exit` method on your element,
-  then call `loadView` and `destroyView` on the element as necessary.  When your view
+  then call `makeView` and `destroyView` on the element as necessary.  When your view
   is first ready to be used, call `viewIsReady`.  On the simplest views, this may be during the `domReady` lifecycle event.
 
-  `loadView` triggers `_enter` to be called when various states described below resolve.
+  `makeView` triggers `_enter` to be called when various states described below resolve.
 
   `destroyView` calls `_exit` and maintains the view's state.
 
@@ -165,7 +165,7 @@
     /**
      * Call `_enter` if ready, otherwise wait to call `_enter`.
      */
-    loadView: function() {
+    makeView: function() {
 
       var self = this;
 
@@ -272,7 +272,7 @@
       if (this.activeView) {
 
         this.destroyView();
-        this.loadView();
+        this.makeView();
       }
     },
 
@@ -288,7 +288,7 @@
 
     /**
      * Callback waiting for `yarn-view-ready`
-     * if view was not ready when `loadView` was called.
+     * if view was not ready when `makeView` was called.
      */
     _enterOnceReady: function() {
 
