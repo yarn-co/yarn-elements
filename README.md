@@ -4,6 +4,7 @@ Polymer v1 elements for the yarniverse
 ## Includes
 ### Elements
 ### Behaviors
+  - `yarn-auth-behavior`
   - `yarn-state-behavior`
   - `yarn-view-behavior`
 
