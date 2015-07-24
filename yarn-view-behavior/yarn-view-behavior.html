@@ -227,9 +227,10 @@
               var self = this;
 
               this.async(function() {
+
                 self._setLongLoadReady(true);
                 self.fire('yarn-view-long-loaded', { view: self });
-              }, null, this.longLoadMs);
+              }, this.longLoadMs);
 
           }
 
@@ -270,7 +271,7 @@
      */
     startLoading: function() {
 
-      if (!this.viewLoading) {
+      if (!this.viewLoading && this.activeView) {
 
         this._setViewLoading(true);
         this.fire('yarn-view-loading', { view: this });
@@ -282,7 +283,7 @@
      */
     finishLoading: function() {
 
-      if (this.viewLoading) {
+      if (this.viewLoading && this.activeView) {
 
         this._setViewLoading(false);
         this.fire('yarn-view-loaded', { view: this });
@@ -333,7 +334,7 @@
 
           this.removeEventListener('yarn-view-long-loaded', this._enterOnceReady);
       }
-console.log(this.viewReady, (this.authenticationReady || !this.authenticate), (this.longLoadReady || !this.longLoad || !internals.firstLoaded));
+
       if (this.viewReady &&
           (this.authenticationReady || !this.authenticate) &&
           (this.longLoadReady || !this.longLoad || !internals.firstLoaded)) {
