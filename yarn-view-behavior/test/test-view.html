@@ -11,6 +11,13 @@
 
     is: 'test-view',
 
+    hasBeenEntered: false,
+
+    _enter: function() {
+
+      this.hasBeenEntered = true;
+    },
+
     behaviors: [
       Polymer.YarnViewBehavior
     ]

@@ -18,7 +18,7 @@
   </head>
   <body>
 
-    <test-fixture id="simple">
+    <test-fixture id="no-options">
       <template>
         <test-view></test-view>
       </template>
@@ -27,22 +27,56 @@
     <script>
       suite('<yarn-view-behavior>', function() {
 
-        suite('', function() {
+        suite('without options', function() {
 
           var view;
 
           setup(function() {
 
-            view = fixture('simple');
+            view = fixture('no-options');
           });
 
-          test('', function(done) {
+          test('waits for `viewIsReady` to call `_enter`.', function(done) {
 
-            assert.throw(function() {
-              view.set('state', {})
+            assert.equal(view.activeView, false);
+            assert.equal(view.viewReady, false);
+            assert.equal(view.viewLoading, false);
+
+            var fired = [];
+
+            var logEvent = function(e) {
+
+              fired.push(e.type);
+            }
+
+            view.addEventListener('yarn-view-waiting', logEvent);
+            view.addEventListener('yarn-view-ready', logEvent);
+            view.addEventListener('yarn-view-active', logEvent);
+
+            view.makeView();
+
+            assert.equal(fired.length, 1);
+            assert.equal(fired[0], 'yarn-view-waiting');
+
+            requestAnimationFrame(function() {
+
+              view.viewIsReady();
+
+              assert.equal(fired.length, 3);
+              assert.equal(fired[1], 'yarn-view-ready');
+              assert.equal(fired[2], 'yarn-view-active');
+
+              assert.equal(view.hasBeenEntered, false);
+
+              view.async(function() {
+
+                assert.equal(view.hasBeenEntered, true);
+
+                done();
+              });
+
             });
 
-            done();
           });
 
         });
