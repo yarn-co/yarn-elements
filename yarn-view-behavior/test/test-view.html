@@ -1,6 +1,7 @@
 <link rel="import" href="../../../polymer/polymer.html">
 
 <link rel="import" href="../yarn-view-behavior.html">
+<link rel="import" href="../../yarn-auth-behavior/yarn-auth-behavior.html">
 
 <dom-module id="test-view"></dom-module>
 
@@ -29,6 +30,7 @@
     },
 
     behaviors: [
+      Polymer.YarnAuthBehavior,
       Polymer.YarnViewBehavior
     ]
 

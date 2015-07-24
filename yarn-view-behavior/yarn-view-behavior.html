@@ -185,6 +185,28 @@
       '_checkAuthReload(state.auth.isAuthenticated)'
     ],
 
+    attached: function() {
+
+      // Initialize authentication status.
+      if (this.authenticate) {
+
+        if (this.get('state.auth._origin') !== 'yarn-auth-behavior') {
+
+          console.warn('yarn-view-behavior expects `state.auth` to be ' +
+                       'managed by yarn-auth-behavior when using `authenticate`.');
+        }
+
+        var auth = this.state.auth;
+
+        if (auth.status === auth.statuses.AUTH_FINISHED) {
+
+          this._setAuthenticationReady(true);
+        }
+
+      }
+
+    },
+
     /**
      * Call `_enter` if ready, otherwise wait to call `_enter`.
      */
@@ -356,7 +378,9 @@
 
       if (this.authenticate) {
 
-        if (this.state.auth.status == 'finished') {
+        var auth = this.state.auth;
+
+        if (auth.status == auth.statuses.AUTH_FINISHED) {
 
           this._setAuthenticationReady(true);
           this.fire('yarn-view-authentication-finished', { view: this });
