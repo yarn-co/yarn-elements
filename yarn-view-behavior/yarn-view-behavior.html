@@ -13,7 +13,13 @@
 
   To use this behavior, simply implement an `_enter` and `_exit` method on your element,
   then call `makeView` and `destroyView` on the element as necessary.  When your view
-  is first ready to be used, call `viewIsReady`.  On the simplest views, this may be during the `domReady` lifecycle event.
+  is first ready to be used, call `viewIsReady`.  On the simplest views, this may be during the microtasks after the `attached` lifecycle callback, i.e.,
+  ```
+  attached: function() {
+
+    this.async(this.viewIsReady);
+  }
+  ```
 
   `makeView` triggers `_enter` to be called when various states described below resolve.
 
@@ -28,6 +34,10 @@
 
     /**
      * @event yarn-view-waiting
+     */
+
+    /**
+     * @event yarn-view-active
      */
 
     /**
@@ -155,6 +165,19 @@
         notify: true
       },
 
+      /**
+       * Indicates that the view is waiting.
+       * This is `true` in time that
+       * occurs between when `makeView` is called
+       * and the view is eventually entered.
+       */
+      viewWaiting:  {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      }
+
     },
 
     observers: [
@@ -173,7 +196,7 @@
           (this.authenticationReady || !this.authenticate) &&
           (this.longLoadReady || !this.longLoad || !internals.firstLoaded)) {
 
-          this.activeView = true;
+          this._setActiveView(true);
           this.async(function() {
 
             self._enter();
@@ -181,6 +204,7 @@
       } else {
 
           // Report that this view is waiting for something
+          this._setViewWaiting(true);
           this.fire('yarn-view-waiting', { view: this });
 
           // If view not ready, wait for it
@@ -203,7 +227,7 @@
               var self = this;
 
               this.async(function() {
-                self.longLoadReady = true;
+                self._setLongLoadReady(true);
                 self.fire('yarn-view-long-loaded', { view: self });
               }, null, this.longLoadMs);
 
@@ -221,10 +245,11 @@
       this.fire('yarn-view-destroying', { view: this });
 
       // Reset need for long load.
-      this.longLoadReady = false;
+      this._setLongLoadReady(false);
 
-      this.activeView = false;
-      this.viewLoading = false;
+      this._setActiveView(false);
+      this._setViewLoading(false);
+      this._setViewWaiting(false);
       this._exit();
 
       this.fire('yarn-view-destroyed', { view: this });
@@ -236,7 +261,7 @@
      */
     viewIsReady: function() {
 
-      this.viewReady = true;
+      this._setViewReady(true);
       this.fire('yarn-view-ready', { view: this });
     },
 
@@ -247,7 +272,7 @@
 
       if (!this.viewLoading) {
 
-        this.viewLoading = true;
+        this._setViewLoading(true);
         this.fire('yarn-view-loading', { view: this });
       }
     },
@@ -259,7 +284,7 @@
 
       if (this.viewLoading) {
 
-        this.viewLoading = false;
+        this._setViewLoading(false);
         this.fire('yarn-view-loaded', { view: this });
       }
     },
@@ -308,14 +333,16 @@
 
           this.removeEventListener('yarn-view-long-loaded', this._enterOnceReady);
       }
-
+console.log(this.viewReady, (this.authenticationReady || !this.authenticate), (this.longLoadReady || !this.longLoad || !internals.firstLoaded));
       if (this.viewReady &&
           (this.authenticationReady || !this.authenticate) &&
           (this.longLoadReady || !this.longLoad || !internals.firstLoaded)) {
 
         internals.firstLoaded = true;
 
-        this.activeView = true;
+        this._setViewWaiting(false);
+        this._setActiveView(true);
+        this.fire('yarn-view-active', { view: this });
         this.async(function() {
 
           self._enter();
@@ -330,7 +357,7 @@
 
         if (this.state.auth.status == 'finished') {
 
-          this.authenticationReady = true;
+          this._setAuthenticationReady(true);
           this.fire('yarn-view-authentication-finished', { view: this });
         }
 
