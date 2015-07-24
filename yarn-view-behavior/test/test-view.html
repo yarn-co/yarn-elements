@@ -12,10 +12,20 @@
     is: 'test-view',
 
     hasBeenEntered: false,
+    enterCount: 0,
+    hasBeenExited: false,
+    exitCount: 0,
 
     _enter: function() {
 
       this.hasBeenEntered = true;
+      this.enterCount++;
+    },
+
+    _exit: function() {
+
+      this.hasBeenExited = true;
+      this.exitCount++;
     },
 
     behaviors: [
