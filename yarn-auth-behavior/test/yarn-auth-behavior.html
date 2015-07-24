@@ -27,20 +27,93 @@
     <script>
       suite('<yarn-auth-behavior>', function() {
 
-        suite('', function() {
+        var auth;
 
-          var auth;
+        setup(function() {
 
-          setup(function() {
+          auth = fixture('simple');
+          state = auth.state;
+        });
 
-            auth = fixture('simple');
-          });
+        test('initializes correctly.', function(done) {
 
-          test('', function(done) {
+          assert.equal(auth.authStatuses.AUTH_STARTED, 'started');
+          assert.equal(auth.authStatuses.AUTH_WAITING, 'waiting');
+          assert.equal(auth.authStatuses.AUTH_FINISHED, 'finished');
+
+          assert.equal(state.auth.statuses.AUTH_STARTED, 'started');
+          assert.equal(state.auth.statuses.AUTH_WAITING, 'waiting');
+          assert.equal(state.auth.statuses.AUTH_FINISHED, 'finished');
+
+          assert.equal(state.auth._origin, 'yarn-auth-behavior');
+          assert.equal(state.auth.artifacts, null);
+          assert.equal(state.auth.credentials, null);
+          assert.equal(state.auth.isAuthenticated, false);
+          assert.equal(state.auth.status, auth.authStatuses.AUTH_STARTED);
+
+          done();
+        });
+
+        test('logs a user in with success.', function(done) {
+
+          auth.login(true);
+
+          assert.equal(state.auth.status, auth.authStatuses.AUTH_WAITING);
+          assert.equal(state.auth.isAuthenticated, false);
+
+          auth.addEventListener('yarn-auth-success', function(e) {
+
+            assert.equal(state.auth.artifacts, 'bobby');
+            assert.equal(state.auth.credentials, 'jimmy');
+            assert.equal(state.auth.isAuthenticated, true);
+            assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
 
             done();
           });
 
+          auth.addEventListener('yarn-auth-failure', function(e) {
+
+            // Fails
+            done(e);
+          });
+
+        });
+
+        test('logs a user in with failure.', function(done) {
+
+          auth.login(false);
+
+          assert.equal(state.auth.status, auth.authStatuses.AUTH_WAITING);
+          assert.equal(state.auth.isAuthenticated, true);
+
+          auth.addEventListener('yarn-auth-success', function(e) {
+
+            done(e);
+          });
+
+          auth.addEventListener('yarn-auth-failure', function(e) {
+
+            // Keeps old state
+            assert.equal(state.auth.artifacts, 'bobby');
+            assert.equal(state.auth.credentials, 'jimmy');
+            assert.equal(state.auth.isAuthenticated, true);
+            assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
+            done();
+          });
+
+        });
+
+        test('logs a user out.', function(done) {
+
+          assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
+          assert.equal(state.auth.isAuthenticated, true);
+
+          auth.logout();
+
+          assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
+          assert.equal(state.auth.isAuthenticated, false);
+
+          done();
         });
 
       });

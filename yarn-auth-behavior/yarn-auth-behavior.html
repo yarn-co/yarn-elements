@@ -133,6 +133,8 @@
 
       if (!details.success) {
 
+        this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
+
         this.fire('yarn-auth-failure', {
           credentials: details.credentials,
           artifacts: details.artifacts

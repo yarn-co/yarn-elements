@@ -11,6 +11,22 @@
 
     is: 'test-auth',
 
+    _login: function(success) {
+
+      var self = this;
+
+      this.fire('hitting-login');
+
+      requestAnimationFrame(function(){
+
+        self.fire('yarn-auth-obtained', {
+          success: success,
+          credentials: 'jimmy',
+          artifacts: 'bobby'
+        });
+      });
+    },
+
     behaviors: [
       Polymer.YarnAuthBehavior
     ]
