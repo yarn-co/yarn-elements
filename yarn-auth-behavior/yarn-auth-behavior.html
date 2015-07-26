@@ -13,7 +13,7 @@
   The `YarnAuthBehavior` mixin should be used to add authentication state to an app.
   It is loosely inspired by hapi's authentication.
 
-  Simply implement `_login` such that the `yarn-auth-obtained` event will fire with `success`, `credentials`, and (optional) `artifacts` details provided once authentication info is obtained.
+  Simply implement `_login` such that the `yarn-auth-attempt` event will fire with `success`, `credentials`, and (optional) `artifacts` details provided once authentication info is obtained.
 
   You may then use `login` to authenticate a user.  The arguments to `login` will be delegated to `_login`.
 
@@ -35,21 +35,31 @@
      * `yarn-auth-success`.  Otherwise `yarn-auth-failure` will be fired
      * and the user will not be logged-in.
      *
-     * @event yarn-auth-obtained
+     * @event yarn-auth-attempt
      */
-     
+
     /**
+     * Should fire with `success` detail
+     * If `success` is truthy, the user will be logged-out, triggering
+     * `yarn-auth-logout-pre` and `yarn-auth-logout`.
+     * Otherwise `yarn-auth-logout-failure` will be fired
+     * and the user will not be logged-out.
+     *
      * @event yarn-auth-logout-attempt
      */
-     
+
     /**
      * @event yarn-auth-logout-pre
      */
-          
+   
     /**
      * @event yarn-auth-logout
      */
-     
+
+    /**
+     * @event yarn-auth-logout-failure
+     */
+
     /**
      * @event yarn-auth-success
      */
@@ -77,7 +87,7 @@
     },
 
     listeners: {
-      'yarn-auth-obtained': '_handleAuthObtained',
+      'yarn-auth-attempt': '_handleAuthObtained',
       'yarn-auth-logout-attempt': '_handleLogoutAttempt'
     },
     
@@ -163,7 +173,7 @@
 
     /**
      * A method that must be implemented such that
-     * the `yarn-auth-obtained` event will fire
+     * the `yarn-auth-attempt` event will fire
      * with `success`, `credentials`, and
      * (optional) `artifacts` details provided.
      */
@@ -171,22 +181,23 @@
 
       throw new Error('`_login` must be implemented ' +
                       'such that it is guaranteed the ' +
-                      '`yarn-auth-obtained` event will fire.')
+                      '`yarn-auth-attempt` event will fire.');
     },
     
     /**
-     * A method that can be implemented such that
+     * A method that must be implemented such that
      * the `yarn-auth-logout-attempt` event will fire
      * with `success` details provided.
      */
     _logout: function() {
-    
-      // Default behavior, logout immediately.
-      this.fire('yarn-auth-logout-attempt', { success: true });
+
+      throw new Error('`_logout` must be implemented ' +
+                      'such that it is guaranteed the ' +
+                      '`yarn-auth-logout-attempt` event will fire.');
     },
 
     /**
-     * Handles `yarn-auth-obtained` event.
+     * Handles `yarn-auth-attempt` event.
      */
     _handleAuthObtained: function(e) {
 
@@ -217,10 +228,14 @@
       
       this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
 
-      if (details.success) {
+      if (!details.success) {
 
-        this.unsetCredentials();
+        this.fire('yarn-auth-logout-failure');
+        
+        return;
       }
+
+      this.unsetCredentials();
 
     }
 
