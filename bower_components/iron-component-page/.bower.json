@@ -13,7 +13,6 @@
     "type": "git",
     "url": "git://github.com/PolymerElements/iron-component-page.git"
   },
-  "version": "1.0.5",
   "private": true,
   "license": "http://polymer.github.io/LICENSE.txt",
   "dependencies": {
@@ -33,14 +32,14 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "web-component-tester": "*"
   },
-  "homepage": "https://github.com/polymerelements/iron-component-page",
-  "_release": "1.0.5",
+  "homepage": "https://github.com/devinivy/iron-component-page",
+  "_release": "e825ef1075",
   "_resolution": {
-    "type": "version",
-    "tag": "v1.0.5",
-    "commit": "2bc588824d9ddbbb042ec59f00cd379876137c99"
+    "type": "branch",
+    "branch": "master",
+    "commit": "e825ef1075516eeb5912cdc7b1b44ba4b25bc8a9"
   },
-  "_source": "git://github.com/polymerelements/iron-component-page.git",
-  "_target": "^1.0.0",
-  "_originalSource": "polymerelements/iron-component-page"
+  "_source": "git://github.com/devinivy/iron-component-page.git",
+  "_target": "master",
+  "_originalSource": "devinivy/iron-component-page"
 }
