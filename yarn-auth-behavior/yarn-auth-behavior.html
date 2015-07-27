@@ -13,7 +13,10 @@
   The `YarnAuthBehavior` mixin should be used to add authentication state to an app.
   It is loosely inspired by hapi's authentication.
 
-  Simply implement `_login` such that the `yarn-auth-attempt` event will fire with `success`, `credentials`, and (optional) `artifacts` details provided once authentication info is obtained.
+  Simply implement `_login` such that the `yarn-auth-attempt` event will fire with
+  `success`, `credentials`, and (optional) `artifacts` details provided once
+  authentication info is obtained, and `_logout` such that the `yarn-auth-logout-attempt`
+  event will fire with `success` details provided once the logout attempt is completed.
 
   You may then use `login` to authenticate a user.  The arguments to `login` will be delegated to `_login`.
 
