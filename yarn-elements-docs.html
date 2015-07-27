@@ -1,0 +1,70 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-component-page/iron-component-page.html">
+
+<dom-module id="yarn-elements-docs">
+
+  <template>
+
+    <iron-component-page
+      id="page"
+      doc-behaviors="{{docBehaviors}}"
+      doc-elements="{{docElements}}"
+      active="yarn-elements"
+      src="yarn-elements.html">
+    </iron-component-page>
+
+  </template>
+
+  <script>
+  (function() {
+
+    Polymer({
+
+      is: 'yarn-elements-docs',
+
+      observers: [
+        '_filterBehaviors(docBehaviors)',
+        '_filterElements(docElements)',
+      ],
+
+      ready: function() {
+
+        this._filterBehaviors(this.docBehaviors);
+        this._filterElements(this.docElements);
+      },
+
+      _filterElements: function(elements) {
+
+        this._filter('docElements', 'yarn-');
+      },
+
+      _filterBehaviors: function(behaviors) {
+
+        this._filter('docBehaviors', 'Polymer.Yarn');
+      },
+
+      _filter: function(path, match) {
+
+        var components = this.get(path);
+
+        if (!components) return;
+
+        // Loop backwards, against the direction of splicing.
+        var component;
+        var i = components.length;
+        while (i--) {
+
+          component = components[i];
+          if (component.is.indexOf(match) !== 0) {
+
+            this.splice(path, i, 1);
+          }
+        }
+      }
+
+    });
+
+  })();
+  </script>
+
+</dom-module>
