@@ -6,13 +6,17 @@
 
   var AUTH_STARTED = 'started';
   var AUTH_WAITING = 'waiting';
+  var AUTH_WAITING_LOGOUT = 'waiting-logout';
   var AUTH_FINISHED = 'finished';
 
   /**
   The `YarnAuthBehavior` mixin should be used to add authentication state to an app.
   It is loosely inspired by hapi's authentication.
 
-  Simply implement `_login` such that the `yarn-auth-obtained` event will fire with `success`, `credentials`, and (optional) `artifacts` details provided once authentication info is obtained.
+  Simply implement `_login` such that the `yarn-auth-attempt` event will fire with
+  `success`, `credentials`, and (optional) `artifacts` details provided once
+  authentication info is obtained, and `_logout` such that the `yarn-auth-logout-attempt`
+  event will fire with `success` details provided once the logout attempt is completed.
 
   You may then use `login` to authenticate a user.  The arguments to `login` will be delegated to `_login`.
 
@@ -33,8 +37,30 @@
      * If `success` is truthy, the user will be logged-in, triggering
      * `yarn-auth-success`.  Otherwise `yarn-auth-failure` will be fired
      * and the user will not be logged-in.
+     *
+     * @event yarn-auth-attempt
+     */
 
-     * @event yarn-auth-obtained
+    /**
+     * Should fire with `success` detail
+     * If `success` is truthy, the user will be logged-out, triggering
+     * `yarn-auth-logout-pre` and `yarn-auth-logout`.
+     * Otherwise `yarn-auth-logout-failure` will be fired
+     * and the user will not be logged-out.
+     *
+     * @event yarn-auth-logout-attempt
+     */
+
+    /**
+     * @event yarn-auth-logout-pre
+     */
+   
+    /**
+     * @event yarn-auth-logout
+     */
+
+    /**
+     * @event yarn-auth-logout-failure
      */
 
     /**
@@ -56,6 +82,7 @@
         value: {
           AUTH_STARTED: AUTH_STARTED,
           AUTH_WAITING: AUTH_WAITING,
+          AUTH_WAITING_LOGOUT: AUTH_WAITING_LOGOUT,
           AUTH_FINISHED: AUTH_FINISHED
         }
       }
@@ -63,9 +90,32 @@
     },
 
     listeners: {
-      'yarn-auth-obtained': '_handleAuthObtained'
+      'yarn-auth-attempt': '_handleAuthObtained',
+      'yarn-auth-logout-attempt': '_handleLogoutAttempt'
     },
+    
+    attached: function() {
 
+      if (typeof this.state.auth === 'undefined') {
+
+        // Init globals on first attachment
+        this.set('state.auth', {
+          _origin: 'yarn-auth-behavior',
+          statuses: this.authStatuses,
+          isAuthenticated: false,
+          credentials: null,
+          artifacts: null,
+        });
+
+        this.set('state.auth.status', this.authStatuses.AUTH_STARTED);
+
+      } else if (typeof this.state.auth !== 'object' ||
+                 this.state.auth._origin !== 'yarn-auth-behavior') {
+
+        throw new Error('YarnAuthBehavior `state.auth` namespace is already in use.');
+      }
+    },
+    
     /**
      * Manually set credentials and artifacts for a logged-in user.
      */
@@ -92,6 +142,21 @@
     },
 
     /**
+     * Manually log-out the currently authenticated user.
+     */
+    unsetCredentials: function() {
+
+      this.fire('yarn-auth-logout-pre');
+
+      this.set('state.auth.credentials', null);
+      this.set('state.auth.artifacts', null);
+      this.set('state.auth.isAuthenticated', false);
+      this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
+      
+      this.fire('yarn-auth-logout');
+    },
+    
+    /**
      * Delegates to `_login` and maintains authentication status.
      */
     login: function() {
@@ -99,21 +164,19 @@
       this.set('state.auth.status', this.authStatuses.AUTH_WAITING);
       this._login.apply(this, arguments);
     },
-
+    
     /**
-     * Log-out the currently authenticated user.
+     * Delegates to `_logout` and maintains authentication status.
      */
     logout: function() {
-
-      this.set('state.auth.credentials', null);
-      this.set('state.auth.artifacts', null);
-      this.set('state.auth.isAuthenticated', false);
-      this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
+    
+      this.set('state.auth.status', this.authStatuses.AUTH_WAITING_LOGOUT);
+      this._logout.apply(this, arguments);
     },
 
     /**
      * A method that must be implemented such that
-     * the `yarn-auth-obtained` event will fire
+     * the `yarn-auth-attempt` event will fire
      * with `success`, `credentials`, and
      * (optional) `artifacts` details provided.
      */
@@ -121,19 +184,31 @@
 
       throw new Error('`_login` must be implemented ' +
                       'such that it is guaranteed the ' +
-                      '`yarn-auth-obtained` event will fire.')
+                      '`yarn-auth-attempt` event will fire.');
+    },
+    
+    /**
+     * A method that must be implemented such that
+     * the `yarn-auth-logout-attempt` event will fire
+     * with `success` details provided.
+     */
+    _logout: function() {
+
+      throw new Error('`_logout` must be implemented ' +
+                      'such that it is guaranteed the ' +
+                      '`yarn-auth-logout-attempt` event will fire.');
     },
 
     /**
-     * Handles `yarn-auth-obtained` event.
+     * Handles `yarn-auth-attempt` event.
      */
     _handleAuthObtained: function(e) {
 
       var details = e.detail;
+      
+      this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
 
       if (!details.success) {
-
-        this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
 
         this.fire('yarn-auth-failure', {
           credentials: details.credentials,
@@ -147,26 +222,24 @@
 
     },
 
-    attached: function() {
+    /**
+     * Handles `yarn-auth-logout-attempt` event.
+     */
+    _handleLogoutAttempt: function(e) {
 
-      if (typeof this.state.auth === 'undefined') {
+      var details = e.detail;
+      
+      this.set('state.auth.status', this.authStatuses.AUTH_FINISHED);
 
-        // Init globals on first attachment
-        this.set('state.auth', {
-          _origin: 'yarn-auth-behavior',
-          statuses: this.authStatuses,
-          isAuthenticated: false,
-          credentials: null,
-          artifacts: null,
-        });
+      if (!details.success) {
 
-        this.set('state.auth.status', this.authStatuses.AUTH_STARTED);
-
-      } else if (typeof this.state.auth !== 'object' ||
-                 this.state.auth._origin !== 'yarn-auth-behavior') {
-
-        throw new Error('YarnAuthBehavior `state.auth` namespace is already in use.');
+        this.fire('yarn-auth-logout-failure');
+        
+        return;
       }
+
+      this.unsetCredentials();
+
     }
 
   };

@@ -74,7 +74,7 @@
           auth.addEventListener('yarn-auth-failure', function(e) {
 
             // Fails
-            done(e);
+            done(new Error(e));
           });
 
         });
@@ -88,7 +88,8 @@
 
           auth.addEventListener('yarn-auth-success', function(e) {
 
-            done(e);
+            // Fails
+            done(new Error(e));
           });
 
           auth.addEventListener('yarn-auth-failure', function(e) {
@@ -103,17 +104,60 @@
 
         });
 
-        test('logs a user out.', function(done) {
+        test('logs a user out with failure.', function(done) {
 
           assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
           assert.equal(state.auth.isAuthenticated, true);
 
-          auth.logout();
+          auth.logout(false);
+
+          assert.equal(state.auth.status, auth.authStatuses.AUTH_WAITING_LOGOUT);
+          assert.equal(state.auth.isAuthenticated, true);
+
+          auth.addEventListener('yarn-auth-logout', function(e) {
+
+            // Fails
+            done(new Error(e));
+          });
+
+          auth.addEventListener('yarn-auth-logout-failure', function(e) {
+
+            // Keeps old state
+            assert.equal(state.auth.artifacts, 'bobby');
+            assert.equal(state.auth.credentials, 'jimmy');
+            assert.equal(state.auth.isAuthenticated, true);
+            assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
+            done();
+          });
+
+        });
+
+        test('logs a user out with success.', function(done) {
 
           assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
-          assert.equal(state.auth.isAuthenticated, false);
+          assert.equal(state.auth.isAuthenticated, true);
 
-          done();
+          auth.logout(true);
+
+          assert.equal(state.auth.status, auth.authStatuses.AUTH_WAITING_LOGOUT);
+          assert.equal(state.auth.isAuthenticated, true);
+
+          auth.addEventListener('yarn-auth-logout', function(e) {
+
+            // Keeps old state
+            assert.equal(state.auth.artifacts, null);
+            assert.equal(state.auth.credentials, null);
+            assert.equal(state.auth.isAuthenticated, false);
+            assert.equal(state.auth.status, auth.authStatuses.AUTH_FINISHED);
+            
+            done();
+          });
+
+          auth.addEventListener('yarn-auth-logout-failure', function(e) {
+          
+            // Fails
+            done(new Error(e));
+          });
         });
 
       });
