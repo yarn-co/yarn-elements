@@ -1,0 +1,40 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../yarn-auth-behavior/yarn-auth-behavior.html">
+
+<link rel="import" href="../yarn-view-behavior.html">
+
+<dom-module id="test-view"></dom-module>
+
+<script>
+(function() {
+
+  Polymer({
+
+    is: 'test-view',
+
+    hasBeenEntered: false,
+    enterCount: 0,
+    hasBeenExited: false,
+    exitCount: 0,
+
+    _enter: function() {
+
+      this.hasBeenEntered = true;
+      this.enterCount++;
+    },
+
+    _exit: function() {
+
+      this.hasBeenExited = true;
+      this.exitCount++;
+    },
+
+    behaviors: [
+      Polymer.YarnAuthBehavior,
+      Polymer.YarnViewBehavior
+    ]
+
+  });
+
+})();
+</script>

@@ -1,0 +1,51 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../yarn-auth-behavior.html">
+
+<dom-module id="test-auth"></dom-module>
+
+<script>
+(function() {
+
+  Polymer({
+
+    is: 'test-auth',
+
+    _login: function(success) {
+
+      var self = this;
+
+      this.fire('hitting-login');
+
+      requestAnimationFrame(function(){
+
+        self.fire('yarn-auth-attempt', {
+          success: success,
+          credentials: 'jimmy',
+          artifacts: 'bobby'
+        });
+      });
+    },
+
+    _logout: function(success) {
+
+      var self = this;
+
+      this.fire('hitting-logout');
+
+      requestAnimationFrame(function(){
+
+        self.fire('yarn-auth-logout-attempt', {
+          success: success
+        });
+      });
+    },
+
+    behaviors: [
+      Polymer.YarnAuthBehavior
+    ]
+
+  });
+
+})();
+</script>

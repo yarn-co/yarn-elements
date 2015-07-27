@@ -1,0 +1,39 @@
+{
+  "name": "yarn-auth-behavior",
+  "version": "0.1.0",
+  "keywords": [
+    "web-components",
+    "polymer",
+    "authentication",
+    "auth"
+  ],
+  "license": "MIT",
+  "description": "Polymer v1 app authentication",
+  "authors": [
+    "Devin Ivy <devin@bigroomstudios.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yarn-co/yarn-auth-behavior.git"
+  },
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.1.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
+    "test-fixture": "polymerelements/test-fixture#^1.0.0",
+    "web-component-tester": "*",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/yarn-co/yarn-auth-behavior",
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.0",
+    "commit": "f3be7fa74bb549394a9226c4afe9d0b0e3e795ea"
+  },
+  "_source": "git://github.com/yarn-co/yarn-auth-behavior.git",
+  "_target": "^0.1.0",
+  "_originalSource": "yarn-co/yarn-auth-behavior"
+}
