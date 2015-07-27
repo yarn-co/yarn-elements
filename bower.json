@@ -15,7 +15,10 @@
     "url": "git://github.com/yarn-co/yarn-elements.git"
   },
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "yarn-auth-behavior": "yarn-co/yarn-auth-behavior#^0.1.0",
+    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.1.0",
+    "yarn-view-behavior": "yarn-co/yarn-view-behavior#^0.1.0"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
