@@ -1,6 +1,8 @@
 # yarn-elements
 Polymer v1 elements for the yarniverse
 
+[![Build Status](https://travis-ci.org/yarn-co/yarn-elements.svg?branch=master)](https://travis-ci.org/yarn-co/yarn-elements)
+
 ## Includes
 ### Elements
 ### Behaviors
