@@ -1,6 +1,6 @@
 {
   "name": "yarn-auth-behavior",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "keywords": [
     "web-components",
     "polymer",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
-    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.1.0"
+    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.2.0"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#^1.0.0",

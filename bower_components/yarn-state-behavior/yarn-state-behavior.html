@@ -1,6 +1,8 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <script>
+var YarnBehaviors = YarnBehaviors || {};
+
 (function() {
 
   var internals = {
@@ -9,12 +11,11 @@
   };
 
   /**
-  The `YarnStateBehavior` mixin should be used to share app state across elements via the property `state`.  The behavior ensures that `set` and `notifyPath` calls involving the `state` object or its children are delegated to all elements with this behavior, so observers should work as expected.
+  This behavior should be used to share app state across elements via the `state` property.  The behavior ensures that `set` and `notifyPath` calls involving the `state` object or its children are delegated to all elements with this behavior, so observers should work as expected.
 
-  @polymerBehavior Polymer.YarnStateBehavior
+  @polymerBehavior YarnBehaviors.StateBehavior
   */
-
-  Polymer.YarnStateBehavior = {
+  YarnBehaviors.StateBehavior = {
 
     properties: {
 

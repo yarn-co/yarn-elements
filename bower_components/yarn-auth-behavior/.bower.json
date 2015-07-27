@@ -1,6 +1,6 @@
 {
   "name": "yarn-auth-behavior",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "keywords": [
     "web-components",
     "polymer",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
-    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.1.0"
+    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.2.0"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
@@ -27,13 +27,13 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
   "homepage": "https://github.com/yarn-co/yarn-auth-behavior",
-  "_release": "0.1.0",
+  "_release": "0.2.1",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.0",
-    "commit": "f3be7fa74bb549394a9226c4afe9d0b0e3e795ea"
+    "tag": "v0.2.1",
+    "commit": "d4f27c0188641f776cd4cf1f238985eee4d5582a"
   },
   "_source": "git://github.com/yarn-co/yarn-auth-behavior.git",
-  "_target": "^0.1.0",
+  "_target": "^0.2.0",
   "_originalSource": "yarn-co/yarn-auth-behavior"
 }

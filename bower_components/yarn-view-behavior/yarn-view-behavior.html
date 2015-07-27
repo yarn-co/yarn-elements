@@ -2,6 +2,8 @@
 <link rel="import" href="../yarn-state-behavior/yarn-state-behavior.html">
 
 <script>
+var YarnBehaviors = YarnBehaviors || {};
+
 (function() {
 
   var internals = {
@@ -9,7 +11,7 @@
   };
 
   /**
-  The `YarnViewBehavior` mixin gives elements view-like behavior.  It extends the lifecycle of an element to encompass the ideas of "entering", "exiting", and "reloading".  Additionally, this behavior can be used to force waits for authentication, arbitrary setup, or minimum wait times.  It also provides an API to report that a view is loading or finished loading upon entering.
+  This behavior gives an element view-like state and properties.  It extends the lifecycle of an element to encompass the ideas of "entering", "exiting", and "reloading".  Additionally, this behavior can be used to force waits for authentication, arbitrary setup, or minimum wait times.  It also provides an API to report that a view is loading or finished loading upon entering.
 
   To use this behavior, simply implement an `_enter` and `_exit` method on your element,
   then call `makeView` and `destroyView` on the element as necessary.  When your view
@@ -27,10 +29,10 @@
 
   `reload` destroys then loads the view if it is active.
 
-  @polymerBehavior Polymer.YarnViewBehavior
+  @polymerBehavior YarnBehaviors.ViewBehavior
   */
 
-  Polymer.YarnViewBehaviorImpl = {
+  YarnBehaviors.ViewBehaviorImpl = {
 
     /**
      * @event yarn-view-waiting
@@ -400,9 +402,9 @@
   };
 
   // Compose behaviors
-  Polymer.YarnViewBehavior = [
-    Polymer.YarnStateBehavior,
-    Polymer.YarnViewBehaviorImpl
+  YarnBehaviors.ViewBehavior = [
+    YarnBehaviors.StateBehavior,
+    YarnBehaviors.ViewBehaviorImpl
   ];
 
 })();

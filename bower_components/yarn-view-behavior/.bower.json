@@ -1,6 +1,6 @@
 {
   "name": "yarn-view-behavior",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": [
     "web-components",
     "polymer",
@@ -18,23 +18,23 @@
   },
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
-    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.1.0"
+    "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.2.0"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
     "web-component-tester": "*",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
-    "yarn-auth-behavior": "yarn-co/yarn-auth-behavior#^0.1.0"
+    "yarn-auth-behavior": "yarn-co/yarn-auth-behavior#^0.2.0"
   },
   "homepage": "https://github.com/yarn-co/yarn-view-behavior",
-  "_release": "0.1.0",
+  "_release": "0.2.0",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.0",
-    "commit": "279bb7cf4ed83d036548d22e6d52665af621de47"
+    "tag": "v0.2.0",
+    "commit": "28ded6024fcb33d999c753bf0eab6552dfded44b"
   },
   "_source": "git://github.com/yarn-co/yarn-view-behavior.git",
-  "_target": "^0.1.0",
+  "_target": "^0.2.0",
   "_originalSource": "yarn-co/yarn-view-behavior"
 }

@@ -1,4 +1,5 @@
 # yarn-state-behavior
+**YarnBehaviors.StateBehavior**
 Polymer v1 cross-component state
 
 [![Build Status](https://travis-ci.org/yarn-co/yarn-state-behavior.svg?branch=master)](https://travis-ci.org/yarn-co/yarn-state-behavior)
@@ -18,4 +19,3 @@ To view the fancy documentation for this repo, follow the process above then nav
 
 ### Tests
 Tests are placed inside the `test` folder and can be accessed at **http://localhost:8000/bower_components/yarn-state-behavior/test/**.
-
