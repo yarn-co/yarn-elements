@@ -1,6 +1,6 @@
 {
   "name": "yarn-endpoints-behavior",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [
     "web-components",
     "polymer",
@@ -27,11 +27,11 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
   "homepage": "https://github.com/yarn-co/yarn-endpoints-behavior",
-  "_release": "0.1.0",
+  "_release": "0.1.1",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.0",
-    "commit": "6780310c5b05d3c0ce2ad08d01ffd4993ff0f873"
+    "tag": "v0.1.1",
+    "commit": "3b58e0c4323348668c9c169e80cd971b0cd5b4f8"
   },
   "_source": "git://github.com/yarn-co/yarn-endpoints-behavior.git",
   "_target": "^0.1.0",

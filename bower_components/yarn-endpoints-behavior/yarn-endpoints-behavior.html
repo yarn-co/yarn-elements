@@ -15,9 +15,15 @@ var YarnBehaviors = YarnBehaviors || {};
     this.protocol = 'https';
     this.host = 'dogtown.io';
 
-    this.set('endpoints.removeOwner', {
-      method: 'DELETE',
-      path: '/dogs/{dogId}/owner/{ownerId}'
+    this.set('endpoints', {
+      removeOwner: {
+        method: 'DELETE',
+        path: '/dogs/{dogId}/owner/{ownerId}'
+      },
+      newDog: {
+        method: 'POST',
+        path: '/dogs'
+      }
     });
 
     this.set('params', {
@@ -25,8 +31,16 @@ var YarnBehaviors = YarnBehaviors || {};
       ownerId: 13
     });
 
+    // Specify which endpoint defined on `endpoints` for which to compute the method and URL
+    this.endpoint = 'removeOwner';
+
     // this.method === 'delete'
     // this.url === 'https://dogtown.io/dogs/144/owner/13'
+
+    this.endpoint = 'newDog';
+
+    // this.method === 'post'
+    // this.url === 'https://dogtown.io/dogs'
   }
   ```
 
