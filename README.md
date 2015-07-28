@@ -7,6 +7,7 @@ Polymer v1 elements for the yarniverse
 ### Elements
 ### Behaviors
   - [`yarn-auth-behavior`](https://github.com/yarn-co/yarn-auth-behavior)
+  - [`yarn-endpoints-behavior`](https://github.com/yarn-co/yarn-endpoints-behavior)
   - [`yarn-state-behavior`](https://github.com/yarn-co/yarn-state-behavior)
   - [`yarn-view-behavior`](https://github.com/yarn-co/yarn-view-behavior)
 
