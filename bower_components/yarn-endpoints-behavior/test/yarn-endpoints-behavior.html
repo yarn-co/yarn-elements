@@ -1,0 +1,191 @@
+<html>
+  <head>
+
+    <title>yarn-endpoints-behavior tests</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../test-fixture/test-fixture-mocha.js"></script>
+
+    <link rel="import" href="../../test-fixture/test-fixture.html">
+    <link rel="import" href="test-endpoints.html">
+
+  </head>
+  <body>
+
+    <test-fixture id="simple">
+      <template>
+        <test-endpoints></test-endpoints>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('<yarn-endpoints-behavior>', function() {
+
+        var endpts;
+
+        setup(function() {
+
+          endpts = fixture('simple');
+        });
+
+        test('allows `endpoints` initialization in `ready`.', function(done) {
+
+          endpts.endpoint = 'createDog';
+
+          expect(endpts.method).to.equal('post');
+          expect(endpts.url).to.equal('http://dogtown.org/dogs');
+          done();
+        });
+
+        test('allows adding an endpoint specified as an object.', function(done) {
+
+          endpts.set('endpoints.getDogs', {
+            method: 'GET',
+            path: '/dogs'
+          });
+
+          var normalized = endpts._normalizedEndpoints.getDogs;
+
+          expect(normalized.method).to.equal('get');
+          expect(normalized.path).to.equal('/dogs');
+          expect(normalized.params).to.deep.equal([]);
+          done();
+        });
+
+        test('allows adding an endpoint specified as a string.', function(done) {
+
+          endpts.set('endpoints.getCats', 'GET /cats');
+
+          var normalized = endpts._normalizedEndpoints.getCats;
+
+          expect(normalized.method).to.equal('get');
+          expect(normalized.path).to.equal('/cats');
+          expect(normalized.params).to.deep.equal([]);
+          done();
+        });
+
+        test('throws adding an endpoint without required info.', function(done) {
+
+          // Missing method
+          expect(function(){
+
+            endpts.set('endpoints.deleteCats', '/cats');
+          }).to.throw('Endpoint "deleteCats" must specify a valid method and path.');
+
+          // Missing method
+          expect(function(){
+
+            endpts.set('endpoints.deleteCats', {
+              path: '/cats'
+            });
+          }).to.throw('Endpoint "deleteCats" must specify a valid method and path.');
+
+          // Missing path
+          expect(function(){
+
+            endpts.set('endpoints.deleteCats', 'DELETE');
+          }).to.throw('Endpoint "deleteCats" must specify a valid method and path.');
+
+          // Missing path
+          expect(function(){
+
+            endpts.set('endpoints.deleteCats', {
+              method: 'DELETE'
+            });
+          }).to.throw('Endpoint "deleteCats" must specify a valid method and path.');
+
+          done();
+        });
+
+        test('throws adding an endpoint with path not beginning with \'/\'.', function(done) {
+
+          expect(function(){
+
+            endpts.set('endpoints.deleteCats', 'DELETE cats');
+          }).to.throw('Endpoint "deleteCats" must have a path beginning with \'/\'.');
+
+          expect(function(){
+
+            endpts.set('endpoints.deleteCats', {
+              method: 'DELETE',
+              path: 'cats'
+            });
+          }).to.throw('Endpoint "deleteCats" must have a path beginning with \'/\'.');
+
+          done();
+        });
+
+        test('allows specifying path parameters.', function(done) {
+
+          endpts.set('endpoints.removeOwner', {
+            method: 'DELETE',
+            path: '/dogs/{dogId}/owner/{ownerId}'
+          });
+
+          var normalized = endpts._normalizedEndpoints.removeOwner;
+
+          expect(normalized.method).to.equal('delete');
+          expect(normalized.path).to.equal('/dogs/{dogId}/owner/{ownerId}');
+          expect(normalized.params).to.deep.equal(['dogId', 'ownerId']);
+
+          done();
+        });
+
+        test('sets `url` to `null` if path parameters are not fully specified.', function(done) {
+
+          endpts.endpoint = 'removeOwner';
+
+          expect(endpts.method).to.equal('delete');
+          expect(endpts.url).to.equal(null);
+
+          endpts.set('params', '144');
+
+          expect(endpts.method).to.equal('delete');
+          expect(endpts.url).to.equal(null);
+
+          done();
+        });
+
+        test('sets `url` when path parameters are specified in full.', function(done) {
+
+          endpts.endpoint = 'removeOwner';
+
+          endpts.set('params', {
+            dogId: 144,
+            ownerId: 13
+          });
+
+          expect(endpts.method).to.equal('delete');
+          expect(endpts.url).to.equal('http://dogtown.org/dogs/144/owner/13');
+          done();
+        });
+
+        test('can re-specify `host` and `protocol`.', function(done) {
+
+          endpts.endpoint = 'removeOwner';
+
+          endpts.set('params', {
+            dogId: 144,
+            ownerId: 13
+          });
+
+          endpts.host = 'dogtown.gov';
+          endpts.protocol = 'https';
+
+          expect(endpts.method).to.equal('delete');
+          expect(endpts.url).to.equal('https://dogtown.gov/dogs/144/owner/13');
+          done();
+        });
+
+      });
+
+    </script>
+
+  </body>
+</html>

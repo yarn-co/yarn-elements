@@ -1,0 +1,39 @@
+{
+  "name": "yarn-endpoints-behavior",
+  "version": "0.1.0",
+  "keywords": [
+    "web-components",
+    "polymer",
+    "ajax",
+    "sdk",
+    "endpoints"
+  ],
+  "license": "MIT",
+  "description": "Polymer v1 API endpoint definitions",
+  "authors": [
+    "Devin Ivy <devin@bigroomstudios.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yarn-co/yarn-endpoints-behavior.git"
+  },
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
+    "test-fixture": "polymerelements/test-fixture#^1.0.0",
+    "web-component-tester": "*",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/yarn-co/yarn-endpoints-behavior",
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.0",
+    "commit": "6780310c5b05d3c0ce2ad08d01ffd4993ff0f873"
+  },
+  "_source": "git://github.com/yarn-co/yarn-endpoints-behavior.git",
+  "_target": "^0.1.0",
+  "_originalSource": "yarn-co/yarn-endpoints-behavior"
+}

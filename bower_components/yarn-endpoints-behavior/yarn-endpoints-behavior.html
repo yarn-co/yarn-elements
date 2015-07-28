@@ -1,0 +1,211 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+var YarnBehaviors = YarnBehaviors || {};
+
+(function() {
+
+  /**
+  Define a set of API endpoints with path parameters for automatic URL and method building.
+
+  Example.
+  ```
+  ready: function() {
+
+    this.protocol = 'https';
+    this.host = 'dogtown.io';
+
+    this.set('endpoints.removeOwner', {
+      method: 'DELETE',
+      path: '/dogs/{dogId}/owner/{ownerId}'
+    });
+
+    this.set('params', {
+      dogId: 144,
+      ownerId: 13
+    });
+
+    // this.method === 'delete'
+    // this.url === 'https://dogtown.io/dogs/144/owner/13'
+  }
+  ```
+
+  @polymerBehavior YarnBehaviors.EndpointsBehavior
+  */
+  YarnBehaviors.EndpointsBehavior = {
+
+    properties: {
+
+      /**
+       * Definition of all endpoints, keyed by endpoint name
+       */
+      endpoints: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+
+      /**
+       * Name of current endpoint
+       */
+      endpoint: {
+        type: String
+      },
+
+      /**
+       * Specify `http` or `https`
+       */
+      protocol: {
+        type: String,
+        value: 'http'
+      },
+
+      /**
+       * Specify host, e.g. `localhost:8080`
+       */
+      host: {
+        type: String
+      },
+
+      /**
+       * Specify endpoint (path) parameters in key-value pairs
+       */
+      params: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+
+      /**
+       * The computed request URL
+       */
+      url: {
+        type: 'String',
+        notify: true,
+        computed: '_makeUrl(protocol, host, endpoint, params.*)'
+      },
+
+      /**
+       * The computed request method
+       */
+      method: {
+        type: 'String',
+        notify: true,
+        computed: '_makeMethod(endpoint)'
+      },
+
+      _normalizedEndpoints: {
+        type: Object,
+        computed: '_normalizeEndpoints(endpoints.*)'
+      }
+
+    },
+
+    _makeUrl: function(protocol, host, endpoint, paramsChange) {
+
+      var definition = this._normalizedEndpoints[endpoint];
+
+      if (!definition) {
+
+        throw new Error('Endpoint "' + endpoint + '" is not defined');
+      }
+
+      var path = definition.path;
+      var param;
+      for (var i = 0; i < definition.params.length; ++i) {
+
+        param = definition.params[i];
+
+        if (!this.params[param]) {
+
+          console.warn('Path parameter "' + param + '" is not defined.');
+          return null;
+        }
+
+        path = path.replace('{' + param + '}', this.params[param]);
+      }
+
+      return protocol + '://' + host + path;
+    },
+
+    _makeMethod: function(endpoint) {
+
+      var definition = this._normalizedEndpoints[endpoint];
+
+      if (!definition) {
+
+        throw new Error('Endpoint "' + endpoint + '" is not defined');
+      }
+
+      return definition.method;
+    },
+
+    _normalizeEndpoints: function(endpointsChange) {
+
+      var normalized = {};
+
+      var name;
+      var info;
+      var normInfo;
+      var pieces;
+      var names = Object.keys(this.endpoints);
+      for (var i = 0; i < names.length; ++i) {
+
+        name = names[i];
+        info = this.endpoints[name];
+        normInfo = {
+          method: null,
+          path: null,
+          params: null
+        };
+
+        if (typeof info === 'undefined') continue;
+
+        // Normalize string info
+        if (typeof info === 'string') {
+
+          pieces = info.split(' ');
+          if (pieces.length !== 2) {
+
+            this.set('endpoints.' + name, undefined);
+            throw new Error('Endpoint "' + name + '" must specify a valid method and path.');
+          }
+
+          normInfo.method = pieces[0].toLowerCase();
+          normInfo.path = pieces[1];
+        } else if (typeof info === 'object') {
+
+          normInfo.method = (info.method || '').toLowerCase();
+          normInfo.path = info.path;
+        }
+
+        if (!normInfo.method || !normInfo.path) {
+
+          this.set('endpoints.' + name, undefined);
+          throw new Error('Endpoint "' + name + '" must specify a valid method and path.');
+        }
+
+        if (normInfo.path.indexOf('/') !== 0) {
+
+          this.set('endpoints.' + name, undefined);
+          throw new Error('Endpoint "' + name + '" must have a path beginning with \'/\'.');
+        }
+
+        // Get param names from path
+        normInfo.params = (normInfo.path.match(/{[^}]+}/g) || [])
+                          .map(function(match) {
+                            return match.slice(1, -1);
+                          });
+
+        normalized[name] = normInfo;
+      }
+
+      return normalized;
+    }
+
+  };
+
+})();
+</script>

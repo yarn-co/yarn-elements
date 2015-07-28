@@ -1,0 +1,31 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../yarn-endpoints-behavior.html">
+
+<dom-module id="test-endpoints"></dom-module>
+
+<script>
+(function() {
+
+  var defaultEndpoints = {
+    createDog: 'POST /dogs'
+  };
+
+  Polymer({
+
+    is: 'test-endpoints',
+
+    ready: function() {
+
+      this.host = 'dogtown.org';
+      this.set('endpoints', defaultEndpoints);
+    },
+
+    behaviors: [
+      YarnBehaviors.EndpointsBehavior
+    ]
+
+  });
+
+})();
+</script>
