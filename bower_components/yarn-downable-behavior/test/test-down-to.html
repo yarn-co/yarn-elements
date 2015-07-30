@@ -1,0 +1,62 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<dom-module id="test-down-to"></dom-module>
+
+<script>
+(function() {
+
+  Polymer({
+
+    is: 'test-down-to',
+
+    properties: {
+
+      propToArray: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
+      propToObject: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+
+      propToString: {
+        type: String,
+        value: ''
+      },
+
+      propToStringLater: {
+        type: String,
+        value: ''
+      },
+
+      propToObjectLater: {
+        type: Object,
+        notify: true,
+        value: function() {
+          return {};
+        }
+      }
+
+    },
+
+    observers: [
+      '_observe(propToObjectLater.*)'
+    ],
+
+    observedLateObjectChange: false,
+
+    _observe: function() {
+
+      this.observedLateObjectChange = !!this.propToObjectLater.later;
+    }
+
+  });
+
+})();
+</script>

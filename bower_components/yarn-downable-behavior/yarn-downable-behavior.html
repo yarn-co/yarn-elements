@@ -1,0 +1,155 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+var YarnBehaviors = YarnBehaviors || {};
+
+(function() {
+
+  /**
+  This behavior adds sugar to composition by binding parent properties down to a single child element.  On the parent, simply set `downable` to an object whose keys are parent properties and whose values are child properties.  When a parent property changes, it will set the mapped child property accordingly.
+
+  The parent should have exactly one child element in its light DOM.  The parent component must distribute its light DOM child element into its local DOM using `<content></content>`.
+
+  This can be used to great effect with yarn-endpoints-behavior.
+  ```
+  <!--
+  If <my-sdk> has the endpoints behavior
+  and the downable behavior with `url` and `method`
+  as `downable` key/values, then <iron-ajax> will
+  automatically have the endpoint's correct
+  `url` and `method` bound to it.
+  -->
+
+  <my-sdk endpoint="createOwner">
+    <iron-ajax></iron-ajax>
+  </my-sdk>
+  ```
+
+
+  @polymerBehavior YarnBehaviors.DownableBehavior
+  */
+  YarnBehaviors.DownableBehavior = {
+
+    properties: {
+
+      /**
+       * The mapping of parent component to child component properties.
+       *
+       * Keys are parent property names with `notify` enabled.
+       *
+       * Values are child property names that are not `readOnly`.
+       *
+       */
+      downable: {
+        type: Object,
+        notify: true,
+        value: function() {
+          return {};
+        }
+      },
+
+      _downPropListeners: {
+        type: Object,
+        notify: true,
+        value: function() {
+          return {};
+        }
+      }
+
+    },
+
+    _downChildElement: null,
+
+    observers: [
+      '_refreshDownWatchers(downable.*)'
+    ],
+
+    _refreshDownWatchers: function() {
+
+      this._determineDownElement();
+      this._clearDownWatchers();
+
+      var eventName;
+      var props = Object.keys(this.downable);
+      for (var i = 0; i < props.length; ++i) {
+
+        eventName = this._addDownWatcher(props[i]);
+
+        // Initialize
+        this._downPropListeners[eventName]();
+      }
+
+    },
+
+    _determineDownElement: function() {
+
+      var content = Polymer.dom(this.root.querySelector('content'));
+      var nodes = content.getDistributedNodes().filter(function(el) {
+
+        // Not a text node
+        return (el.nodeType !== 3);
+      });
+
+      if (nodes.length !== 1) {
+
+        throw new Error('No well-defined node for downward binding.');
+      }
+
+      this._downChildElement = nodes[0];
+    },
+
+    _addDownWatcher: function(propName) {
+
+      var self = this;
+      var eventName = this._makeDownEventName(propName);
+
+      var listener = function(e) {
+
+        if (!self._downChildElement) return;
+
+        var toPropName = self.downable[propName];
+
+        if (typeof self._downChildElement.set === 'function') {
+
+          self._downChildElement.set(toPropName, self[propName]);
+        } else {
+
+          self._downChildElement[toPropName] = self[propName];
+        }
+      };
+
+      this.addEventListener(eventName, listener);
+      this._downPropListeners[eventName] = listener;
+
+      return eventName;
+    },
+
+    _clearDownWatchers: function() {
+
+      this._downPropListeners = this._downPropListeners || {};
+
+      var eventName;
+      var eventNames = Object.keys(this._downPropListeners);
+      for (var i = 0; i < eventNames.length; ++i) {
+
+        eventName = eventNames[i];
+
+        this.removeEventListener(eventName, this._downPropListeners[eventName]);
+        delete this._downPropListeners[eventName];
+      }
+
+    },
+
+    _makeDownEventName: function(propName) {
+
+      return propName.replace(/([a-z][A-Z])/g,
+        function (g) {
+          return g[0] + '-' + g[1].toLowerCase()
+        }
+      ) + '-changed';
+    }
+
+  };
+
+})();
+</script>

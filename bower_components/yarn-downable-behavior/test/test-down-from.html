@@ -1,0 +1,77 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../yarn-downable-behavior.html">
+
+<dom-module id="test-down-from">
+
+  <template>
+    <content></content>
+  </template>
+
+</dom-module>
+
+<script>
+(function() {
+
+  Polymer({
+
+    is: 'test-down-from',
+
+    properties: {
+
+      propFromArray: {
+        type: Array,
+        notify: true,
+        value: function() {
+          return ['initial'];
+        }
+      },
+
+      propFromObject: {
+        type: Object,
+        notify: true,
+        value: function() {
+          return { initial: 'initial' };
+        }
+      },
+
+      propFromString: {
+        type: String,
+        notify: true,
+        value: 'initial'
+      },
+
+      propFromStringLater: {
+        type: String,
+        notify: true,
+        value: 'later'
+      },
+
+      propFromObjectLater: {
+        type: Object,
+        notify: true,
+        value: function() {
+          return { later: { deeply: 'later' } };
+        }
+      }
+
+    },
+
+    ready: function() {
+
+      this.set('downable', {
+        propFromArray: 'propToArray',
+        propFromObject: 'propToObject',
+        propFromString: 'propToString',
+      });
+
+    },
+
+    behaviors: [
+      YarnBehaviors.DownableBehavior
+    ]
+
+  });
+
+})();
+</script>

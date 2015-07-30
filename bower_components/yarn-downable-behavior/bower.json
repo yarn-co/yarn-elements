@@ -1,0 +1,28 @@
+{
+  "name": "yarn-downable-behavior",
+  "version": "0.1.1",
+  "keywords": [
+    "web-components",
+    "polymer",
+    "composition",
+    "binding"
+  ],
+  "license": "MIT",
+  "description": "Polymer v1 sexy bindings by composition",
+  "authors": [
+    "Devin Ivy <devin@bigroomstudios.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yarn-co/yarn-downable-behavior.git"
+  },
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "polymerelements/iron-component-page#^1.0.0",
+    "test-fixture": "polymerelements/test-fixture#^1.0.0",
+    "web-component-tester": "Polymer/web-component-tester#3.3.3",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}

@@ -1,0 +1,183 @@
+<html>
+  <head>
+
+    <title>yarn-downable-behavior tests</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../test-fixture/test-fixture-mocha.js"></script>
+
+    <link rel="import" href="../../test-fixture/test-fixture.html">
+    <link rel="import" href="test-down-from.html">
+    <link rel="import" href="test-down-to.html">
+
+  </head>
+  <body>
+
+    <test-fixture id="simple">
+      <template>
+        <test-down-from id="from">
+          <test-down-to id="to"></test-down-to>
+        </test-down-from>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="fail">
+      <template>
+        <test-down-from id="from"></test-down-from>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('<yarn-downable-behavior>', function() {
+
+        var from;
+        var to;
+
+        setup(function() {
+
+          from = fixture('simple');
+          to = from.querySelector('#to');
+        });
+
+        test('binds existing initialized notifying properties downwards.', function(done) {
+
+          expect(from.propFromArray).to.deep.equal([ 'initial' ]);
+          expect(from.propFromArray).to.equal(to.propToArray);
+
+          expect(from.propFromString).to.equal('initial');
+          expect(from.propFromString).to.equal(to.propToString);
+
+          expect(from.propFromObject).to.deep.equal({ initial: 'initial' });
+          expect(from.propFromObject).to.equal(to.propToObject);
+
+          done();
+        });
+
+        test('binds new initialized notifying properties downwards.', function(done) {
+
+          from.set('downable', {
+            propFromStringLater: 'propToStringLater'
+          });
+
+          expect(from.propFromStringLater).to.equal('later');
+          expect(to.propToStringLater).to.equal(from.propFromStringLater);
+
+          done();
+        });
+
+        test('updates child with downable parent properties.', function(done) {
+
+          // Set array
+          from.set('propFromArray.0', 'final');
+          expect(from.propFromArray).to.deep.equal([ 'final' ]);
+          expect(from.propFromArray).to.equal(to.propToArray);
+
+          // Set string
+          from.propFromString = 'final';
+          expect(from.propFromString).to.equal('final');
+          expect(from.propFromString).to.equal(to.propToString);
+
+          // Set object
+          from.set('propFromObject.final', 'final');
+          expect(from.propFromObject).to.deep.equal({
+            initial: 'initial',
+            final: 'final'
+          });
+          expect(from.propFromObject).to.equal(to.propToObject);
+
+          done();
+        });
+
+        test('respects child element observers.', function(done) {
+
+          expect(to.observedLateObjectChange).to.equal(false);
+
+          from.set('downable', {
+            propFromObjectLater: 'propToObjectLater'
+          });
+
+          expect(from.propFromObjectLater).to.deep.equal({ later: { deeply: 'later' } });
+          expect(to.propToObjectLater).to.equal(from.propFromObjectLater);
+          expect(to.observedLateObjectChange).to.equal(true);
+
+          done();
+        });
+
+        test('resets parent observers.', function(done) {
+
+          expect(from._downPropListeners).to.have.all.keys([
+            'prop-from-array-changed',
+            'prop-from-string-changed',
+            'prop-from-object-changed'
+          ]);
+
+          // Reset bindings
+          from.set('downable', {
+            propFromObjectLater: 'propToObjectLater',
+            propFromStringLater: 'propToStringLater'
+          });
+
+          expect(from._downPropListeners).have.all.keys([
+            'prop-from-object-later-changed',
+            'prop-from-string-later-changed'
+          ]);
+
+          // Prove old bindings aren't happening
+          // Set array
+          from.set('propFromArray', [ 'final' ]);
+          expect(from.propFromArray).to.deep.equal([ 'final' ]);
+          expect(to.propToArray).to.deep.equal([ 'initial' ]);
+
+          // Set string
+          from.propFromString = 'final';
+          expect(from.propFromString).to.equal('final');
+          expect(to.propToString).to.deep.equal('initial');
+
+          // Set object
+          from.set('propFromObject', { final: 'final' });
+          expect(from.propFromObject).to.deep.equal({ final: 'final' });
+          expect(to.propToObject).to.deep.equal({ initial: 'initial' });
+
+          // Prove new bindings are happening
+          // Set object
+          from.set('propFromObjectLater', [ 'later' ]);
+          expect(from.propFromObjectLater).to.deep.equal([ 'later' ]);
+          expect(to.propToObjectLater).to.equal(from.propFromObjectLater);
+
+          // Set string
+          from.propFromStringLater = 'later';
+          expect(from.propFromStringLater).to.equal('later');
+          expect(to.propToStringLater).to.equal(from.propFromStringLater);
+
+          done();
+        });
+
+        test('errors when setting `downable` without distributed content.', function(done) {
+
+          Polymer.dom(from).removeChild(to);
+
+          flush(function() {
+
+            expect(function() {
+
+              from.set('downable', {
+                propFromStringLater: 'propToStringLater'
+              });
+            }).to.throw('No well-defined node for downward binding.');
+
+            done();
+          });
+
+        });
+
+      });
+    </script>
+
+  </body>
+</html>
