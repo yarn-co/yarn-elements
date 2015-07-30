@@ -1,6 +1,6 @@
 {
   "name": "yarn-elements",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "keywords": [
     "web-components",
     "polymer"
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "yarn-auth-behavior": "yarn-co/yarn-auth-behavior#^0.2.0",
+    "yarn-downable-behavior": "yarn-co/yarn-downable-behavior#^0.1.0",
     "yarn-endpoints-behavior": "yarn-co/yarn-endpoints-behavior#^0.1.0",
     "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.2.0",
     "yarn-view-behavior": "yarn-co/yarn-view-behavior#^0.2.0"
@@ -24,7 +25,7 @@
     "polymer": "Polymer/polymer#^1.0.0",
     "iron-component-page": "devinivy/iron-component-page#master",
     "test-fixture": "polymerelements/test-fixture#^1.0.0",
-    "web-component-tester": "*",
+    "web-component-tester": "3.3.3",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   }
 }
