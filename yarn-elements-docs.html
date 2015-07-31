@@ -10,7 +10,7 @@
       no-rewrite
       doc-behaviors="{{docBehaviors}}"
       doc-elements="{{docElements}}"
-      active="yarn-elements"
+      active="{{hash}}"
       src="yarn-elements.html">
     </iron-component-page>
 
@@ -23,15 +23,37 @@
 
       is: 'yarn-elements-docs',
 
+      properties: {
+        hash: {
+          type: String,
+          notify: true
+        }
+      },
+
       observers: [
         '_filterBehaviors(docBehaviors)',
         '_filterElements(docElements)',
+        '_updateLocation(hash)'
       ],
 
       ready: function() {
 
+        var self = this;
+
+        // Set active element from location hash
+        this.hash = window.location.hash.substring(1) || 'yarn-elements';
+        window.addEventListener('hashchange', function() {
+
+          self.hash = window.location.hash.substring(1);
+        });
+
         this._filterBehaviors(this.docBehaviors);
         this._filterElements(this.docElements);
+      },
+
+      _updateLocation: function() {
+
+        window.location.hash = this.hash;
       },
 
       _filterElements: function(elements) {
