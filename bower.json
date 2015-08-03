@@ -20,7 +20,7 @@
     "yarn-endpoints-behavior": "yarn-co/yarn-endpoints-behavior#^0.1.0",
     "yarn-state-behavior": "yarn-co/yarn-state-behavior#^0.2.0",
     "yarn-view-behavior": "yarn-co/yarn-view-behavior#^0.2.0",
-    "yarn-media-queries": "yarn-co/yarn-media-queries#^0.2.0"
+    "yarn-media-queries": "yarn-co/yarn-media-queries#^0.2.2"
   },
   "devDependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
