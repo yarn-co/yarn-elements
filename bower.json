@@ -1,6 +1,6 @@
 {
   "name": "yarn-elements",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "keywords": [
     "web-components",
     "polymer"
@@ -15,6 +15,7 @@
     "url": "git://github.com/yarn-co/yarn-elements.git"
   },
   "dependencies": {
+    "yarn-api-user-behavior": "yarn-co/yarn-api-user-behavior#^0.1.0",
     "yarn-auth-behavior": "yarn-co/yarn-auth-behavior#^0.2.0",
     "yarn-downable-behavior": "yarn-co/yarn-downable-behavior#^0.1.0",
     "yarn-endpoints-behavior": "yarn-co/yarn-endpoints-behavior#^0.1.0",
